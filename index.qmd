@@ -17,6 +17,41 @@ footer: "civic-data.de"
 self-contained: true
 ---
 
+## Entwicklung von Deployment
+
+::: {.columns}
+
+::: {.column width="33%"}
+![Coolcaesar at the English-language Wikipedia, CC BY-SA 3.0 <http://creativecommons.org/licenses/by-sa/3.0/>, via Wikimedia Commons](images/First_Web_Server.jpg)
+:::
+
+::: {.column width="33%"}
+![https://www.npr.org/2024/09/20/nx-s1-5120581/three-mile-island-nuclear-power-plant-microsoft-ai](images/nuclear.png)
+:::
+
+::: {.column width="33%"}
+![https://bogdanthegeek.github.io/blog/projects/vapeserver/](images/vape.png)
+:::
+
+
+:::
+
+::: notes
+- viel vor in wenig Zeit, man mus nicht alles verstehen: wir teilen uns gleich in zwei gruppen auf nach erfahrungslevel
+- versuch beide gruppen zu bedienen und versuch raum zu öffnen für den gesamten Umfang von Deployment und was für Begriffe/Technologien hier eine Rolle spielen, 
+- auf ein paar Aspekte detalierter am Beispiel von CorrelAid eingehen
+- eine Lösung für viele der Probleme: Coolify vorstellen
+
+
+- wie viele bestimmt wissen, wurde das world wide web um 1990 am CERN erfunden
+- hier sind man den ersten web server: 
+  - web server = software die anfragen von user agents akzeptiert und eine antwort zurückschickt
+  - von statischen html Dateien bis zu von Large Language Models generierten Texten
+  - ersteres benötigt wesentlich weniger Energie als letzteres (Atomreaktoren), aber gleiches Prinzip
+  - Arbeit/Anwendungen werden immer web/cloud-basierter, Beispiel Office-Programme 
+
+::: 
+
 ## Was ist Deployment?
 
 **Self-Hosting von Open Source**
@@ -56,22 +91,13 @@ self-contained: true
 
 ## Umfang von Deployment: Updates & Wartung
 
+- Deployment ist eine kontinuierliche Tätigkeit
+
 **Wie halte ich alles aktuell?**
 
 - Die Anwendung selbst: neue Features, Bugfixes
 - Das Betriebssystem und Requirements: Sicherheitslücken werden  
   regelmäßig geschlossen
-
-**Wie deploye ich Änderungen schnell und sicher?**
-
-- Jede Änderung im Code soll automatisch live gehen → **CI/CD**  
-  (Continuous Integration / Continuous Deployment)
-- [Git](https://git-scm.com/)-Repository direkt mit dem laufenden Deployment verbinden
-
-::: notes
-- CI/CD: "Push to deploy" – man pusht Code, der Rest passiert automatisch
-:::
-
 
 
 ## Umfang von Deployment: Monitoring
@@ -98,7 +124,7 @@ self-contained: true
 
 - Wo werden Daten gespeichert? (EU vs. USA)
 - Wer hat theoretisch Zugriff auf die Daten?
-- Auftragsdatenverarbeitungsvertrag mit Cloud Providern notwendig
+- ggf. spezielle Verträge mit Cloud Providern notwendig
 - ggf. Zertifizierungen notwendig
 
 
@@ -108,8 +134,10 @@ self-contained: true
 - Self-Hosting von Eigenentwicklungen wie:
   - [correlaid.org](https://correlaid.org)
   - Apps für das CDL wie [umfragen.civic-data.de](https://umfragen.civic-data.de)
-- Blog Post: [correlaid.org/blog/cool-kayak/](https://correlaid.org/blog/cool-kayak/)
 
+::: notes
+- Ein paar der genannten Aspekte detailiert besprechen und am Beispiel von CorrelAid
+:::
 
 ## Wo deploye ich? - Cloud Provider
 
@@ -121,24 +149,20 @@ self-contained: true
   - Man kann manche Dinge auf VPS (Virtual Private Server) mit 1 VCPU/1 GB RAM für ~2$/Monat laufen lassen
 - ➡️ CorrelAid nutzt hauptsächlich Hetzner
 
-## Exkurs: Infrastructure as Code
+## Exkurs: Infrastructure as Code (IaC)
 
-- [Terraform](https://www.terraform.io/)/[OpenTofu](https://opentofu.org/) und [Ansible](https://www.ansible.com/)
-- Deklarative Beschreibung von Infrastruktur wie Server, DNS oder Firewall in Code
-- Macht Infrastruktur reproduzierbar und überschaubarer
-- ➡️ CorrelAid nutzt OpenTofu und Ansible für den primären Setup von VPS
+**Kernidee:** Infrastruktur als Code beschreiben statt manuell klicken.
 
-```
-resource "hcloud_server" "node1" {
-name        = "node1"
-image       = "debian-12"
-server_type = "cx23"
-public_net {
-ipv4_enabled = true
-ipv6_enabled = true
-}
-}
-```
+- **Reproduzierbar** – gleiche Umgebung, überall
+- **Nachvollziehbar** – versionierbar via Git
+- **Plattformunabhängig** – AWS, Hetzner, DigitalOcean & Co.
+
+| Tool | Frage |
+|---|---|
+| **Terraform / OpenTofu** | *Was* soll existieren? |
+| **Ansible** | *Wie* soll es konfiguriert sein? |
+
+➡️ CorrelAid nutzt OpenTofu + Ansible
 
 ## Exkurs: Was sind Container?
 
@@ -168,19 +192,11 @@ Wenn eine Anwendung aus mehreren Containern besteht
 - Docker Compose: eine YAML-Datei beschreibt alle Container und wie sie kommunizieren
 :::
 
-## PaaS
+## Coolify als PaaS
 
-- Komplettlösungen für Deployment
-- Dinge wie CI/CD, Monitoring und Notifications eingebaut
-- Oft verbunden mit [Git](https://git-scm.com/)([Hub](https://github.com/))
-  - Updaten eines Repositories führt zu Rolling Update des Deployments
-- Bekannte proprietary PaaS-Anbieter: [Vercel](https://vercel.com/), [Netlify](https://www.netlify.com/), [Heroku](https://www.heroku.com/)
 - ➡️ CorrelAid nutzt [Coolify](https://coolify.io/) als PaaS
   - Früher Vercel als PaaS für Website und OpenTofu/Ansible managed Docker Compose auf VPS
   - Vor Kurzem Umstieg auf [Coolify](https://coolify.io/) (self-hosted)
-
-## Coolify als PaaS
-
 - Freie Auswahl von Cloud Providern (Standort)
 - Alles unter eigener Kontrolle, aber trotzdem Komplettlösung mit Best Practices
 - Keine Abhängigkeit von externen Anbietern und Features, für die man extra bezahlen muss
@@ -204,3 +220,8 @@ Wenn eine Anwendung aus mehreren Containern besteht
 - Verschieden Deployment-Modi: Docker Compose, [Nixpacks](https://nixpacks.com/) und mehr
 - Verknüpfung mit [GitHub](https://github.com/) Repositories mit Rolling Updates
 - Basic Auth: Passwortgeschützte Anwendungen
+
+## Outro
+
+- Blog Post: [correlaid.org/blog/cool-kayak/](https://correlaid.org/blog/cool-kayak/)
+- Vielen Dank :)
