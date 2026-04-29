@@ -1,0 +1,206 @@
+---
+title: "Input: Gemeinsam Machen 6"
+format:
+    revealjs:
+        toc: true
+        toc-title: Inhalt
+        toc-depth: 2
+        slide-number: true
+        mermaid:
+            theme: neutral
+smaller: true
+date: 04/30/2026
+author: Jonas Stettner | CorrelAid @ CDL
+theme: cdl_assets/cdl.scss
+logo: cdl_assets/logo.png
+footer: "civic-data.de"
+self-contained: true
+---
+
+## Was ist Deployment?
+
+**Self-Hosting von Open Source**
+
+- Self-Hosting: Verantwortung liegt bei einem selbst, Anwendung liegt in eigener Einflussphäre
+- Beispiel: Self-Hosting von [Nextcloud](https://nextcloud.com/) oder [OpenProject](https://www.openproject.org/)
+
+**Deployment von eigenem Code**
+
+- Kann über Self-Hosting geschehen
+- PaaS-Anbieter (Platform as a Service, z.B. [Vercel](https://vercel.com/); [Heroku](https://www.heroku.com/))
+- Beispiel: Diese Präsentation ist deployed über [GitHub Pages](https://pages.github.com/) (als static website)
+
+::: notes
+- Bezug auf Anwendungen, die auf Servern laufen und über das Internet erreichbar sind
+::: 
+
+## Umfang von Deployment: Infrastruktur
+
+**Wo läuft die Anwendung?**
+
+- Unterschiedliche Abstraktionslevel: 
+  - Server im Keller (On Premises)
+  - Server bei einem Cloud Provider gemietet (oft VPS: Virtual Private Server)
+  - PaaS/CaaS (Platform bzw. Container as a Service)
+- Je nach Wahl: man ist selbst verantwortlich für das Betriebssystem  
+  (OS Administration, z.B. Linux-Distribution wie [Debian](https://www.debian.org/))
+
+**Wie ist die Anwendung erreichbar?**
+
+- Eine lesbare Adresse (z.B. civic-data.de) muss mit der  
+  Server-IP verknüpft werden → **DNS Management**
+
+::: notes
+- Analogie DNS: wie ein Telefonbuch – Name rein, Nummer raus
+:::
+
+## Umfang von Deployment: Updates & Wartung
+
+**Wie halte ich alles aktuell?**
+
+- Die Anwendung selbst: neue Features, Bugfixes
+- Das Betriebssystem und Requirements: Sicherheitslücken werden  
+  regelmäßig geschlossen
+
+**Wie deploye ich Änderungen schnell und sicher?**
+
+- Jede Änderung im Code soll automatisch live gehen → **CI/CD**  
+  (Continuous Integration / Continuous Deployment)
+- [Git](https://git-scm.com/)-Repository direkt mit dem laufenden Deployment verbinden
+
+::: notes
+- CI/CD: "Push to deploy" – man pusht Code, der Rest passiert automatisch
+:::
+
+
+
+## Umfang von Deployment: Monitoring
+
+**Merke ich, wenn etwas schiefläuft?**
+
+- Ist die Anwendung noch erreichbar? → **Uptime Monitoring**
+- Werden CPU, RAM oder Speicher knapp? → **Ressourcen-Monitoring**
+- ➡️ **Notifications** (z.B. E-Mail wenn correlaid.org down ist)
+
+::: notes
+- Ohne Monitoring erfährt man von Ausfällen oft erst durch Nutzende
+- Frühwarnung verhindert, dass kleine Probleme große werden
+:::
+
+## Umfang von Deployment: Sicherheit & Datenschutz
+
+**Wer darf auf die Anwendung zugreifen?**
+
+- Unerwünschten Traffic blockieren → **Firewalls**
+- Klare Regeln, wer sich einloggen kann → **Access Management**
+
+**Was bedeutet das für den Datenschutz?**
+
+- Wo werden Daten gespeichert? (EU vs. USA)
+- Wer hat theoretisch Zugriff auf die Daten?
+- Auftragsdatenverarbeitungsvertrag mit Cloud Providern notwendig
+- ggf. Zertifizierungen notwendig
+
+
+## Deployment bei CorrelAid
+
+- Self-Hosting von unter anderem [Metabase](https://www.metabase.com/), [OpenProject](https://www.openproject.org/), [LimeSurvey](https://www.limesurvey.org/) und [Directus](https://directus.io/)
+- Self-Hosting von Eigenentwicklungen wie:
+  - [correlaid.org](https://correlaid.org)
+  - Apps für das CDL wie [umfragen.civic-data.de](https://umfragen.civic-data.de)
+- Blog Post: [correlaid.org/blog/cool-kayak/](https://correlaid.org/blog/cool-kayak/)
+
+
+## Wo deploye ich? - Cloud Provider
+
+- "Ich will mir keinen Server in den Keller stellen." ➡️ Cloud Provider
+- Viele Cloud Provider bieten auch DNS Management, Firewalls und PaaS-Lösungen an 
+- Die großen drei: [AWS](https://aws.amazon.com/) (Amazon Web Services), [Azure](https://azure.microsoft.com/), [GCP](https://cloud.google.com/) (Google Cloud Platform)
+  - Großteile des Internets laufen hier
+- Europäische Provider: z.B. [Hetzner](https://www.hetzner.com/), [Scaleway](https://www.scaleway.com/), [Netcup](https://www.netcup.eu/)
+- Tipp: [lowendbox.com](https://lowendbox.com/)
+  - Man kann manche Dinge auf VPS (Virtual Private Server) mit 1 VCPU/1 GB RAM für ~2$/Monat laufen lassen
+- ➡️ CorrelAid nutzt hauptsächlich Hetzner
+
+## Exkurs: Infrastructure as Code
+
+- [Terraform](https://www.terraform.io/)/[OpenTofu](https://opentofu.org/) und [Ansible](https://www.ansible.com/)
+- Deklarative Beschreibung von Infrastruktur wie Server, DNS oder Firewall in Code
+- Macht Infrastruktur reproduzierbar und überschaubarer
+- ➡️ CorrelAid nutzt OpenTofu und Ansible für den primären Setup von VPS
+
+
+resource "hcloud_server" "node1" {
+name        = "node1"
+image       = "debian-12"
+server_type = "cx23"
+public_net {
+ipv4_enabled = true
+ipv6_enabled = true
+}
+}
+
+## Exkurs: Was sind Container?
+
+Heutzutage laufen Anwendungen meistens in Containern statt direkt auf dem Server.
+
+- Vorteil: eine containerisierte Anwendung läuft auf **jedem** Betriebssystem gleich
+- Kein "bei mir läuft das aber" — die Umgebung ist immer identisch
+- **[Docker](https://www.docker.com/)** ist das verbreitetste Tool: man beschreibt die Umgebung  
+  einmal in einem *Image*, der Container läuft überall
+
+::: notes
+- Image = Bauplan, Container = laufende Instanz davon
+:::
+
+## Exkurs: Container Orchestration
+
+Wenn eine Anwendung aus mehreren Containern besteht  
+(z.B. App + Datenbank + Cache), oder *High Availability* wichtig ist, braucht man ein Tool das sie (über mehrere Server) zusammenhält und ihren Lebenszyklus administriert.
+
+| Tool | Für was? | |
+|---|---|---|
+| **[Docker Compose](https://docs.docker.com/compose/)** | Mehrere Container auf einem Server | ✅ CorrelAid |
+| **[Kubernetes](https://kubernetes.io/)** | Hunderte (replizierte) Container auf mehreren Servern | Overkill für NPOs |
+
+::: notes
+- Kubernetes: riesiger Operationsaufwand, lohnt sich erst ab sehr großer Skalierung
+- Docker Compose: eine YAML-Datei beschreibt alle Container und wie sie kommunizieren
+:::
+
+## PaaS
+
+- Komplettlösungen für Deployment
+- Dinge wie CI/CD, Monitoring und Notifications eingebaut
+- Oft verbunden mit [Git](https://git-scm.com/)([Hub](https://github.com/))
+  - Updaten eines Repositories führt zu Rolling Update des Deployments
+- Bekannte proprietary PaaS-Anbieter: [Vercel](https://vercel.com/), [Netlify](https://www.netlify.com/), [Heroku](https://www.heroku.com/)
+- ➡️ CorrelAid nutzt [Coolify](https://coolify.io/) als PaaS
+  - Früher Vercel als PaaS für Website und OpenTofu/Ansible managed Docker Compose auf VPS
+  - Vor Kurzem Umstieg auf [Coolify](https://coolify.io/) (self-hosted)
+
+## Coolify als PaaS
+
+- Freie Auswahl von Cloud Providern (Standort)
+- Alles unter eigener Kontrolle, aber trotzdem Komplettlösung mit Best Practices
+- Keine Abhängigkeit von externen Anbietern und Features, für die man extra bezahlen muss
+
+## Coolify: Server-Management 
+
+![Coolify Server](images/coolify-server.png)
+
+### Features 
+
+- Reverse Proxy (https)
+- Automatisierte OS Updates 
+- Metrics 
+
+##  Coolify: Anwendungen
+
+![Coolify Application](images/coolify-app.png)
+
+### Features 
+
+- Verschieden Deployment-Modi: Docker Compose, [Nixpacks](https://nixpacks.com/) und mehr
+- Verknüpfung mit [GitHub](https://github.com/) Repositories mit Rolling Updates
+- Basic Auth: Passwortgeschützte Anwendungen
