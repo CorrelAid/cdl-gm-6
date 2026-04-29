@@ -116,7 +116,6 @@ self-contained: true
 - "Ich will mir keinen Server in den Keller stellen." ➡️ Cloud Provider
 - Viele Cloud Provider bieten auch DNS Management, Firewalls und PaaS-Lösungen an 
 - Die großen drei: [AWS](https://aws.amazon.com/) (Amazon Web Services), [Azure](https://azure.microsoft.com/), [GCP](https://cloud.google.com/) (Google Cloud Platform)
-  - Großteile des Internets laufen hier
 - Europäische Provider: z.B. [Hetzner](https://www.hetzner.com/), [Scaleway](https://www.scaleway.com/), [Netcup](https://www.netcup.eu/)
 - Tipp: [lowendbox.com](https://lowendbox.com/)
   - Man kann manche Dinge auf VPS (Virtual Private Server) mit 1 VCPU/1 GB RAM für ~2$/Monat laufen lassen
@@ -129,7 +128,7 @@ self-contained: true
 - Macht Infrastruktur reproduzierbar und überschaubarer
 - ➡️ CorrelAid nutzt OpenTofu und Ansible für den primären Setup von VPS
 
-
+```
 resource "hcloud_server" "node1" {
 name        = "node1"
 image       = "debian-12"
@@ -139,6 +138,7 @@ ipv4_enabled = true
 ipv6_enabled = true
 }
 }
+```
 
 ## Exkurs: Was sind Container?
 
